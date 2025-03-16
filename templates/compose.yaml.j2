@@ -2,7 +2,7 @@
 ---
 services:
   monitoring:
-    image: louislam/uptime-kuma:latest
+    image: "{{ uptime_kuma_image }}"
     container_name: uptime-kuma
     restart: unless-stopped
     logging:

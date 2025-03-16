@@ -3,6 +3,9 @@ uptime_kuma_path: /opt/uptime-kuma
 uptime_kuma_owner: root
 uptime_kuma_group: root
 
+# Define the Uptime Kuma Container Image
+uptime_kuma_image: louislam/uptime-kuma:latest
+
 # Define Docker Compose Override Configuration
 uptime_kuma_override:
   services:
