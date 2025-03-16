@@ -1,0 +1,62 @@
+---
+- name: Setup Uptime Kuma Monitoring
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - config.yml
+
+  tasks:
+    - name: Create uptime kuma directory
+      ansible.builtin.file:
+        path: "{{ uptime_kuma_path }}"
+        owner: "{{ uptime_kuma_owner }}"
+        group: "{{ uptime_kuma_group }}"
+        state: directory
+        mode: "0755"
+
+    - name: Manage uptime kuma deployment
+      ansible.builtin.template:
+        src: compose.yaml.j2
+        dest: "{{ uptime_kuma_path }}/compose.yaml"
+        owner: "{{ uptime_kuma_owner }}"
+        group: "{{ uptime_kuma_group }}"
+        trim_blocks: false
+        mode: "0644"
+      notify: restart uptime kuma
+
+    - name: Manage uptime kuma override configuration
+      ansible.builtin.copy:
+        content: "{{ uptime_kuma_override | to_nice_yaml(indent=2) }}"
+        dest: "{{ uptime_kuma_path }}/compose.override.yaml"
+        owner: "{{ uptime_kuma_owner }}"
+        group: "{{ uptime_kuma_group }}"
+        mode: "0644"
+      notify: restart uptime kuma
+      when:
+        - uptime_kuma_override is defined
+        - uptime_kuma_override | length
+
+    - name: Validate uptime kuma deployment
+      ansible.builtin.command: docker compose config --quiet
+      args:
+        chdir: "{{ uptime_kuma_path }}"
+      changed_when: false
+
+    - name: Startup uptime kuma deployment
+      ansible.builtin.command: >-
+        docker compose --ansi never --progress plain up --detach
+      args:
+        chdir: "{{ uptime_kuma_path }}"
+      register: _container_startup
+      changed_when: "'Started' in _container_startup.stdout"
+
+  handlers:
+    - name: Restart uptime kuma deployment
+      ansible.builtin.command: >-
+        docker compose --ansi never --progress plain restart
+      args:
+        chdir: "{{ uptime_kuma_path }}"
+      changed_when: true
+      listen: restart uptime kuma

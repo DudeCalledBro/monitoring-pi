@@ -1,0 +1,4 @@
+---
+repository:
+  description: Ansible playbooks for automating Uptime Kuma deployment
+  topics: ansible, automation, docker-compose, uptime-kuma

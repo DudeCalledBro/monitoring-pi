@@ -1,0 +1,11 @@
+---
+uptime_kuma_path: /opt/uptime-kuma
+uptime_kuma_owner: root
+uptime_kuma_group: root
+
+# Define Docker Compose Override Configuration
+uptime_kuma_override:
+  services:
+    monitoring:
+      ports:
+        - 3001:3001

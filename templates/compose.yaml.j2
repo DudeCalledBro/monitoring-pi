@@ -1,0 +1,17 @@
+{{ ansible_managed | comment }}
+---
+services:
+  monitoring:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+        max-file: 10
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "{{ uptime_kuma_path }}/data:/app/data:rw"

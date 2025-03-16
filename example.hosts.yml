@@ -1,0 +1,5 @@
+---
+all:
+  hosts:
+    uptime-kuma.local:
+      ansible_user: pi
